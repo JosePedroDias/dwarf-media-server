@@ -3,14 +3,24 @@
     <head>
         <meta charset="utf-8">
 
-        <title>video kiss server</title>
+        <title>{{title}} - video kiss server</title>
 
         <link rel="stylesheet" href="/static/styles/main.css"/>
-
-        <title>video kiss server</title>
     </head>
 
     <body>
+        <h1>{{title}}</h1>
+
         {{{body}}}
+
+        {{#unless skipNav}}
+        <nav>
+            <ul>
+                <li><a href="/">home</a></li>
+                <li><a href="/list">list</a></li>
+                <li><a href="/upload">upload</a></li>
+            </ul>
+        </nav>
+        {{/unless}}
     </body>
 </html>

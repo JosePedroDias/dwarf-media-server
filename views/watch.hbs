@@ -1,1 +1,26 @@
-<video controls autoplay src="/video/{{hash}}/{{originalFilename}}"></video>
+<script src="/static/scripts/vendor/async.js"></script>
+{{#each enabledPlugins}}
+    <script src="/static/scripts/plugins/client/{{{this}}}.js"></script>
+{{/each}}
+<script src="/static/scripts/player.js"></script>
+
+<script>
+    var enabledPlugins = {{{enabledPluginsS}}};
+
+    var p = window.player(
+        "{{{vidPath}}}",
+        {{{infoS}}}
+    );
+
+    p.display(function(err) {
+        if (err) { return window.alert(err); }
+
+        p.use(function(err) {
+            if (err) { return window.alert(err); }
+
+            console.log('all done!');
+        });
+    });
+</script>
+
+<br/><a href="/edit/{{{info.hash}}}">edit</a>

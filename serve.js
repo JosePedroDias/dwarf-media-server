@@ -6,6 +6,9 @@ var expHbs     = require('express-handlebars');
 var bodyParser = require('body-parser');
 var multer     = require('multer');
 var send       = require('send');
+var async      = require('async');
+
+var md5File = require('./lib/md5-file');
 
 
 
@@ -15,7 +18,23 @@ var PORT = 3000;
 
 var app = express();
 
-app.engine('.hbs', expHbs({defaultLayout:'main', extname:'.hbs'}));
+app.engine(
+    '.hbs',
+    expHbs({
+        defaultLayout:'main',
+        extname:'.hbs',
+        helpers: {
+            iff: function(conditional, options) {
+                if (options.hash.desired === options.hash.type) {
+                    options.fn(this);
+                }
+                else {
+                    options.inverse(this);
+                }
+            }
+        }
+    })
+);
 app.set('view engine', '.hbs');
 
 app.use('/static', express.static('static'));
@@ -26,9 +45,18 @@ app.use(multer()); // for parsing multipart/form-data
 
 
 
+var enabledPlugins = {
+    server: ['metadata'],
+    client: ['user-filled-info', 'metadata']
+};
+
+
+
 function rndBase32(len) {
     return ( ~~(Math.random() * Math.pow(32, len)) ).toString(32);
 }
+
+
 
 function hashToInfo(hash, cb) {
     fs.readFile(['media', hash, 'info.json'].join('/'), function(err, o) {
@@ -41,24 +69,77 @@ function hashToInfo(hash, cb) {
 }
 
 
+
+function saveInfo(hash, info, cb) {
+    fs.writeFile(['media', hash, 'info.json'].join('/'), JSON.stringify(info), cb);
+}
+
+
+
+function getOriginalPath(info, onClient) {
+    if (onClient) {
+        return ['/video', info.hash].join('/');
+    }
+    return ['media', info.hash, info.originalFile].join('/');
+}
+
+
+function getInfos(cb) {
+    fs.readdir('media', function(err, files) {
+        if (err) { return cb(err); }
+
+        async.mapLimit(
+            files,
+            4,
+            hashToInfo,
+            function(err, infos) {
+                if (err) { throw err; }
+
+                cb(null, infos);
+            }
+        );
+    });
+}
+
+
+
+function doServerPlugins(vidPath, info, cb) {
+    var hash = info.hash;
+
+    async.eachSeries(
+        enabledPlugins.server,
+        function(plugin, innerCb) {
+            var fn = require('./static/scripts/plugins/server/' + plugin).process;
+            fn(vidPath, info, innerCb);
+        },
+        function(err) {
+            if (err) { return cb(err); }
+
+            saveInfo(hash, info, cb);
+        }
+    );
+}
+
+
+
 app.get('/', function (req, res) {
-    res.render('home');
+    res.render('home', {title:'home'});
 });
 
 
 
 app.get('/list', function (req, res) {
-    fs.readdir('media', function(err, files) {
+    getInfos(function(err, infos) {
         if (err) { throw err; }
 
-        res.render('list', {files:files});
-    })
+        res.render('list', {title:'list', infos:infos});
+    });
 });
 
 
 
 app.get('/upload', function (req, res) {
-    res.render('upload');
+    res.render('upload', {title:'upload'});
 });
 
 
@@ -66,34 +147,73 @@ app.get('/upload', function (req, res) {
 app.post('/upload', function (req, res) {
     var f = req.files.file;
     var path0 = f.path;
-    var ext = path.extname(f.name).toLowerCase();
-    var hash = rndBase32(6);
-    var dir = ['media/', hash].join('');
-    var filename = ['original', ext].join('');
-    var path1 = [dir, filename].join('/');
 
-    fs.mkdir(dir, function(err) {
+    getInfos(function(err, infos) {
         if (err) { throw err; }
 
-        fs.rename(path0, path1, function(err) {
+        var md5s = infos.map(function(info) {
+            return info.md5;
+        });
+
+        md5File(path0, function(err, md5) {
             if (err) { throw err; }
 
-            var d = new Date();
-            var info = {
-                hash:         hash,
-                originalFile: filename,
-                originalExt:  ext,
-                createdAt:    d.toISOString(),
-                createdAtN:   d.valueOf()
-            };
-            var path2 = [dir, 'info.json'].join('/');
-            fs.writeFile(path2, JSON.stringify(info), function(err) {
+            var idx = md5s.indexOf(md5);
+            if (idx !== -1) {
+                return res.redirect(['/watch', infos[idx].hash].join('/'));
+            }
+
+            var ext = path.extname(f.name).toLowerCase();
+            var hash = rndBase32(6);
+            var dir = ['media/', hash].join('');
+            var filename = ['original', ext].join('');
+            var path1 = [dir, filename].join('/');
+
+            fs.mkdir(dir, function(err) {
                 if (err) { throw err; }
 
-                res.redirect(['/watch', hash].join('/'));
-            });
+                fs.rename(path0, path1, function(err) {
+                    if (err) { throw err; }
+
+                    var d = new Date();
+                    var info = {
+                        hash:         hash,
+                        originalFile: filename,
+                        originalExt:  ext,
+                        createdAt:    d.toISOString(),
+                        createdAtN:   d.valueOf(),
+                        md5:          md5
+                    };
+                    var path2 = [dir, 'info.json'].join('/');
+
+                    fs.writeFile(path2, JSON.stringify(info), function(err) {
+                        if (err) { throw err; }
+
+                        doServerPlugins(path1, info, function(err) {
+                            if (err) { throw err; }
+
+                            res.redirect(['/edit', hash].join('/'));
+                        });
+                    });
+                });
+            })
         });
-    })
+    });
+});
+
+
+app.get('/process/:hash', function(req, res) {
+    hashToInfo(req.params.hash, function(err, info) {
+        if (err) { throw err; }
+
+        var vidPath = getOriginalPath(info);
+
+        doServerPlugins(vidPath, info, function(err) {
+            if (err) { throw err; }
+
+            res.redirect(['/watch', req.params.hash].join('/'));
+        });
+    });
 });
 
 
@@ -118,7 +238,63 @@ app.get('/watch/:hash', function (req, res) {
     hashToInfo(req.params.hash, function(err, info) {
         if (err) { throw err; }
 
-        res.render('watch', info);
+        res.render(
+            'watch',
+            {
+                title:           'watch',
+                vidPath:         getOriginalPath(info, true),
+                info:            info,
+                infoS:           JSON.stringify(info),
+                enabledPlugins:  enabledPlugins.client,
+                enabledPluginsS: JSON.stringify(enabledPlugins.client)
+            }
+        );
+    });
+});
+
+
+
+app.get('/edit/:hash', function (req, res) {
+    hashToInfo(req.params.hash, function(err, info) {
+        if (err) { throw err; }
+
+        res.render(
+            'edit',
+            {
+                title:           'edit',
+                vidPath:         getOriginalPath(info, true),
+                info:            info,
+                infoS:           JSON.stringify(info),
+                enabledPlugins:  enabledPlugins.client,
+                enabledPluginsS: JSON.stringify(enabledPlugins.client)
+            }
+        );
+    });
+});
+
+
+
+app.post('/edit/:hash', function (req, res) {
+    var infoKeysToUpdate = req.body;
+
+    hashToInfo(req.params.hash, function(err, info) {
+        if (err) {
+            throw err;
+        }
+
+        // add/override sent keys
+        for (var k in infoKeysToUpdate) {
+            if (!infoKeysToUpdate.hasOwnProperty(k)) { continue; }
+            info[k] = infoKeysToUpdate[k];
+        }
+
+        saveInfo(req.params.hash, info, function (err) {
+            if (err) {
+                throw err;
+            }
+
+            res.send({status:'ok', info:info});
+        });
     });
 });
 

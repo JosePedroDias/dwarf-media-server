@@ -1,0 +1,11 @@
+body {
+    font-family: sans-serif;
+}
+
+nav ul {
+    list-style: none;
+}
+
+nav li {
+    display: inline-block;
+}

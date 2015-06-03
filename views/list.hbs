@@ -1,5 +1,5 @@
 <ul>
-    {{#each files}}
-        <li><a href="/watch/{{this}}">{{this}}</a></li>
+    {{#each infos}}
+        <li><a href="/watch/{{{this.hash}}}">{{this.hash}} - {{this.userFilledInfo.title}}</a></li>
     {{/each}}
 </ul>

@@ -1,0 +1,65 @@
+<script src="/static/scripts/vendor/async.js"></script>
+{{#each enabledPlugins}}
+    <script src="/static/scripts/plugins/client/{{{this}}}.js"></script>
+{{/each}}
+<script src="/static/scripts/ajax.js"></script>
+<script src="/static/scripts/player.js"></script>
+
+<script>
+    var enabledPlugins = {{{enabledPluginsS}}};
+
+    var p = window.player(
+        "{{{vidPath}}}",
+        {{{infoS}}}
+    );
+
+    p.display(function(err) {
+        if (err) { return window.alert(err); }
+
+        p.edit(function(err, extracters) {
+            if (err) { return window.alert(err); }
+
+            console.log('all done!');
+
+            var saveBtnEl = document.createElement('button');
+            saveBtnEl.innerHTML = 'save';
+            document.body.appendChild(saveBtnEl);
+
+            saveBtnEl.addEventListener('click', function() {
+                async.mapSeries(
+                    extracters,
+                    function(extracter, innerCb) {
+                        if (!extracter) {
+                            return setTimeout(innerCb, 0, null);
+                        }
+                        extracter(innerCb);
+                    },
+                    function(err, bags) {
+                        if (err) { return window.alert(err); }
+
+                        bags = bags.filter(function(bag) { return !!bag; });
+
+                        var o = {};
+                        bags.forEach(function(bag) {
+                            o[bag.key] = bag.values;
+                        });
+
+                        ajax({
+                            url:'/edit/{{{info.hash}}}',
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            payload: o,
+                            cb: function(err, o) {
+                                if (err) { return window.alert(err); }
+
+                                console.log(o || 'OK!');
+                            }
+                        });
+                    }
+                );
+            });
+        });
+    });
+</script>
+
+<br/><a href="/watch/{{{info.hash}}}">watch</a>
