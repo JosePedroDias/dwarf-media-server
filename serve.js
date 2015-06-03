@@ -1,6 +1,5 @@
 var path = require('path');
 var fs   = require('fs');
-var url  = require('url');
 
 var express    = require('express');
 var expHbs     = require('express-handlebars');
@@ -31,6 +30,15 @@ function rndBase32(len) {
     return ( ~~(Math.random() * Math.pow(32, len)) ).toString(32);
 }
 
+function hashToInfo(hash, cb) {
+    fs.readFile(['media', hash, 'info.json'].join('/'), function(err, o) {
+        if (err) {
+            return cb(err);
+        }
+
+        cb(null, JSON.parse(o));
+    });
+}
 
 
 app.get('/', function (req, res) {
@@ -59,8 +67,8 @@ app.post('/upload', function (req, res) {
     var f = req.files.file;
     var path0 = f.path;
     var ext = path.extname(f.name).toLowerCase();
-    var randName = rndBase32(6);
-    var dir = ['media/', randName].join('');
+    var hash = rndBase32(6);
+    var dir = ['media/', hash].join('');
     var filename = ['original', ext].join('');
     var path1 = [dir, filename].join('/');
 
@@ -70,27 +78,48 @@ app.post('/upload', function (req, res) {
         fs.rename(path0, path1, function(err) {
             if (err) { throw err; }
 
-            res.redirect(['/watch', randName, filename].join('/'));
+            var d = new Date();
+            var info = {
+                hash:         hash,
+                originalFile: filename,
+                originalExt:  ext,
+                createdAt:    d.toISOString(),
+                createdAtN:   d.valueOf()
+            };
+            var path2 = [dir, 'info.json'].join('/');
+            fs.writeFile(path2, JSON.stringify(info), function(err) {
+                if (err) { throw err; }
+
+                res.redirect(['/watch', hash].join('/'));
+            });
         });
     })
 });
 
 
 
-app.get('/video/:hash/:filename', function (req, res) {
-    //console.log(req.params.name);
-    console.log('-> %s %s', req.params.hash, req.params.filename);
-    send(req, [req.params.hash, req.params.filename].join('/'), {root:'media'})
-        //.on('error', error)
-        //.on('directory', redirect)
-        //.on('headers', headers)
-        .pipe(res);
+app.get('/video/:hash', function (req, res) {
+    hashToInfo(req.params.hash, function(err, info) {
+        if (err) { throw err; }
+
+        var path = [req.params.hash, info.originalFile].join('/');
+
+        send(req, path, {root:'media'})
+            //.on('error', error)
+            //.on('directory', redirect)
+            //.on('headers', headers)
+            .pipe(res);
+    });
 });
 
 
 
-app.get('/watch/:hash/:filename', function (req, res) {
-    res.render('watch', req.params);
+app.get('/watch/:hash', function (req, res) {
+    hashToInfo(req.params.hash, function(err, info) {
+        if (err) { throw err; }
+
+        res.render('watch', info);
+    });
 });
 
 
