@@ -13,3 +13,8 @@
 * convert to simple mp4
 * convert to simple HLS
 
+* processing plugins
+    * metadata
+    * extract film strip (server side)
+    * thumbnail (server side)
+    * 

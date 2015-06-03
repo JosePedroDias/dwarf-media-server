@@ -31,11 +31,6 @@ function rndBase32(len) {
     return ( ~~(Math.random() * Math.pow(32, len)) ).toString(32);
 }
 
-function reqFileName(req) {
-    var fn = url.parse(req.url).pathname;
-    return fn.split('/').pop();
-}
-
 
 
 app.get('/', function (req, res) {
@@ -62,26 +57,30 @@ app.get('/upload', function (req, res) {
 
 app.post('/upload', function (req, res) {
     var f = req.files.file;
-    var tempPath = f.path;
-    var tempExt = path.extname(f.name).toLowerCase();
+    var path0 = f.path;
+    var ext = path.extname(f.name).toLowerCase();
     var randName = rndBase32(6);
-    var targetPath = ['media/', randName, tempExt].join('');
-    var filename = [randName, tempExt].join('');
+    var dir = ['media/', randName].join('');
+    var filename = ['original', ext].join('');
+    var path1 = [dir, filename].join('/');
 
-    fs.rename(tempPath, targetPath, function(err) {
+    fs.mkdir(dir, function(err) {
         if (err) { throw err; }
 
-        res.redirect('/watch/' + filename);
-    });
+        fs.rename(path0, path1, function(err) {
+            if (err) { throw err; }
+
+            res.redirect(['/watch', randName, filename].join('/'));
+        });
+    })
 });
 
 
 
-app.get('/video/:file', function (req, res) {
+app.get('/video/:hash/:filename', function (req, res) {
     //console.log(req.params.name);
-    var fn = reqFileName(req);
-    //console.log('-> %s', fn);
-    send(req, fn, {root:'media'})
+    console.log('-> %s %s', req.params.hash, req.params.filename);
+    send(req, [req.params.hash, req.params.filename].join('/'), {root:'media'})
         //.on('error', error)
         //.on('directory', redirect)
         //.on('headers', headers)
@@ -90,13 +89,12 @@ app.get('/video/:file', function (req, res) {
 
 
 
-app.get('/watch/:file', function (req, res) {
-    var fn = reqFileName(req);
-    res.render('watch', {filename:fn});
+app.get('/watch/:hash/:filename', function (req, res) {
+    res.render('watch', req.params);
 });
 
 
 
-var server = app.listen(PORT, function() {
+app.listen(PORT, function() {
     console.log('video-kiss-server app listening on port %s...', PORT);
 });
