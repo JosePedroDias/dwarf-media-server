@@ -46,7 +46,7 @@ app.use(multer()); // for parsing multipart/form-data
 
 
 var enabledPlugins = {
-    server: ['metadata'],
+    server: ['metadata', 'thumb', 'filmstrip'],
     client: ['user-filled-info', 'metadata']
 };
 
@@ -106,14 +106,19 @@ function getInfos(cb) {
 function doServerPlugins(vidPath, info, cb) {
     var hash = info.hash;
 
+    console.log('calling server plugins for hash %s...', hash);
+
     async.eachSeries(
         enabledPlugins.server,
         function(plugin, innerCb) {
+            console.log('* %s...', plugin);
             var fn = require('./static/scripts/plugins/server/' + plugin).process;
             fn(vidPath, info, innerCb);
         },
         function(err) {
             if (err) { return cb(err); }
+
+            console.log('all done. saving...');
 
             saveInfo(hash, info, cb);
         }

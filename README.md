@@ -14,6 +14,10 @@ client-side plugins can do any and all of the following: **use**, **edit**, **pr
 
 # TODO
 
+* add audio-only property based on mime type?
+* video plugins opt-out on those (thumb, filmstrip)
+* filmstrip dims based on area instead of dumb scale
+
 * authentication without password...
 * search features
 
@@ -22,8 +26,6 @@ client-side plugins can do any and all of the following: **use**, **edit**, **pr
     * server-side
         * create SD/HD MP4 with well-supported configs
         * create HLS simple profiles (audio-only, SD, HD)
-        * thumbnail capture
-        * generate film strip
         * audio wave form
         * speech recognition...
         
