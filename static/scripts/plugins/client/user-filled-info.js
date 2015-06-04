@@ -35,7 +35,7 @@
             var bag = info[PLUGIN_KEY];
             if (!bag) {
                 info[PLUGIN_KEY] = bag = {
-                    title: '',
+                    title: info.original.clientFile,
                     description: '',
                     tags:  ''
                 };

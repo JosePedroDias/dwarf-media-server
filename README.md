@@ -20,7 +20,6 @@ client-side plugins can do any and all of the following: **use**, **edit**, **pr
 * processing plugins
 
     * server-side
-        * generate md5 of video. upon new upload, if matches, reuse older one
         * create SD/HD MP4 with well-supported configs
         * create HLS simple profiles (audio-only, SD, HD)
         * thumbnail capture

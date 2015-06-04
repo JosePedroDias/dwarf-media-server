@@ -80,7 +80,7 @@ function getOriginalPath(info, onClient) {
     if (onClient) {
         return ['/video', info.hash].join('/');
     }
-    return ['media', info.hash, info.originalFile].join('/');
+    return ['media', info.hash, info.original.file].join('/');
 }
 
 
@@ -123,7 +123,8 @@ function doServerPlugins(vidPath, info, cb) {
 
 
 app.get('/', function (req, res) {
-    res.render('home', {title:'home'});
+    //res.render('home', {title:'home'});
+    res.redirect('/list');
 });
 
 
@@ -163,10 +164,10 @@ app.post('/upload', function (req, res) {
                 return res.redirect(['/watch', infos[idx].hash].join('/'));
             }
 
-            var ext = path.extname(f.name).toLowerCase();
             var hash = rndBase32(6);
             var dir = ['media/', hash].join('');
-            var filename = ['original', ext].join('');
+            var ext = f.extension;
+            var filename = ['original', ext].join('.');
             var path1 = [dir, filename].join('/');
 
             fs.mkdir(dir, function(err) {
@@ -178,8 +179,12 @@ app.post('/upload', function (req, res) {
                     var d = new Date();
                     var info = {
                         hash:         hash,
-                        originalFile: filename,
-                        originalExt:  ext,
+                        original: {
+                            mimeType: f.mimetype,
+                            clientFile: f.originalname,
+                            file: filename,
+                            sizeInBytes: f.size
+                        },
                         createdAt:    d.toISOString(),
                         createdAtN:   d.valueOf(),
                         md5:          md5
@@ -204,7 +209,15 @@ app.post('/upload', function (req, res) {
 
 app.get('/process/:hash', function(req, res) {
     hashToInfo(req.params.hash, function(err, info) {
-        if (err) { throw err; }
+        if (err) {
+            return res.render(
+                'error',
+                {
+                    title: 'media not found',
+                    message: 'the hash "' + req.params.hash + '" was not found on the server.'
+                }
+            );
+        }
 
         var vidPath = getOriginalPath(info);
 
@@ -222,7 +235,7 @@ app.get('/video/:hash', function (req, res) {
     hashToInfo(req.params.hash, function(err, info) {
         if (err) { throw err; }
 
-        var path = [req.params.hash, info.originalFile].join('/');
+        var path = [req.params.hash, info.original.file].join('/');
 
         send(req, path, {root:'media'})
             //.on('error', error)
@@ -236,7 +249,15 @@ app.get('/video/:hash', function (req, res) {
 
 app.get('/watch/:hash', function (req, res) {
     hashToInfo(req.params.hash, function(err, info) {
-        if (err) { throw err; }
+        if (err) {
+            return res.render(
+                'error',
+                {
+                    title: 'media not found',
+                    message: 'the hash "' + req.params.hash + '" was not found on the server.'
+                }
+            );
+        }
 
         res.render(
             'watch',
@@ -256,7 +277,15 @@ app.get('/watch/:hash', function (req, res) {
 
 app.get('/edit/:hash', function (req, res) {
     hashToInfo(req.params.hash, function(err, info) {
-        if (err) { throw err; }
+        if (err) {
+            return res.render(
+                'error',
+                {
+                    title: 'media not found',
+                    message: 'the hash "' + req.params.hash + '" was not found on the server.'
+                }
+            );
+        }
 
         res.render(
             'edit',
@@ -279,7 +308,13 @@ app.post('/edit/:hash', function (req, res) {
 
     hashToInfo(req.params.hash, function(err, info) {
         if (err) {
-            throw err;
+            return res.render(
+                'error',
+                {
+                    title: 'media not found',
+                    message: 'the hash "' + req.params.hash + '" was not found on the server.'
+                }
+            );
         }
 
         // add/override sent keys

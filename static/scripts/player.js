@@ -20,9 +20,11 @@
             );
         };
 
+        var isAudioOnly = (info && info.metadata && info.metadata.aCodec && (!info.metadata.vCodec))
+
         return {
             display: function(cb) {
-                var videoEl = document.createElement('video');
+                var videoEl = document.createElement(isAudioOnly ? 'audio' : 'video');
                 videoEl.setAttribute('controls', '');
                 videoEl.setAttribute('autoplay', '');
                 videoEl.setAttribute('src', vidPath);
