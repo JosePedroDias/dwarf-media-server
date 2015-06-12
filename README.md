@@ -1,6 +1,34 @@
-# KISS VIDEO UPLOAD/SERVE/PROCESS
+# dwarf-media-server
 
-exploring an asynchronous plugin logic for both server and client-side
+
+
+## what is this about?
+
+exploring a joint approach for serving and handling media on both server-side and client-side.
+
+offering a plugin interface on both sides and a simple JSON structure so plugins can build on each other.
+
+the player itself can be served depending on the resulting data for the media resource.
+
+
+
+## requirements
+
+* recent enough node.js
+* avconv
+
+
+
+## setup
+
+    npm install
+    node serve.js
+
+
+
+## plugin logic
+
+plugins are asynchronous on both server and client-side
 
 server-side plugins can do processing only (**process** method)
 
@@ -12,7 +40,7 @@ client-side plugins can do any and all of the following: **use**, **edit**, **pr
 
 
 
-# TODO
+## TODO
 
 * add audio-only property based on mime type?
 * video plugins opt-out on those (thumb, filmstrip)
