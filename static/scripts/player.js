@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    /*global enabledPlugins:false */
+    /*global ENABLED_PLUGINS:false */
 
     window.player = function(vidPath, info) {
 
@@ -26,7 +26,12 @@
             display: function(cb) {
                 var videoEl = document.createElement(isAudioOnly ? 'audio' : 'video');
                 videoEl.setAttribute('controls', '');
-                videoEl.setAttribute('autoplay', '');
+
+                if ('thumb' in info) {
+
+                }
+
+                //videoEl.setAttribute('autoplay', '');
                 videoEl.setAttribute('src', vidPath);
                 document.body.appendChild(videoEl);
                 setTimeout(cb, 0, null);

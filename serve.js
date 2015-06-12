@@ -14,6 +14,12 @@ var md5File = require('./lib/md5-file');
 
 var PORT = 3000;
 
+var ENABLED_PLUGINS = {
+    server: ['metadata', 'thumb', 'filmstrip'],
+    client: ['user-filled-info', 'metadata', 'thumb', 'sample-audio']
+};
+
+
 
 
 var app = express();
@@ -38,17 +44,11 @@ app.engine(
 app.set('view engine', '.hbs');
 
 app.use('/static', express.static('static'));
+app.use('/media', express.static('media'));
 
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({extended:true})); // for parsing application/x-www-form-urlencoded
 app.use(multer()); // for parsing multipart/form-data
-
-
-
-var enabledPlugins = {
-    server: ['metadata', 'thumb', 'filmstrip'],
-    client: ['user-filled-info', 'metadata']
-};
 
 
 
@@ -78,7 +78,7 @@ function saveInfo(hash, info, cb) {
 
 function getOriginalPath(info, onClient) {
     if (onClient) {
-        return ['/video', info.hash].join('/');
+        return ['/stream', info.hash].join('/');
     }
     return ['media', info.hash, info.original.file].join('/');
 }
@@ -109,7 +109,7 @@ function doServerPlugins(vidPath, info, cb) {
     console.log('calling server plugins for hash %s...', hash);
 
     async.eachSeries(
-        enabledPlugins.server,
+        ENABLED_PLUGINS.server,
         function(plugin, innerCb) {
             console.log('* %s...', plugin);
             var fn = require('./static/scripts/plugins/server/' + plugin).process;
@@ -236,7 +236,7 @@ app.get('/process/:hash', function(req, res) {
 
 
 
-app.get('/video/:hash', function (req, res) {
+app.get('/stream/:hash', function (req, res) {
     hashToInfo(req.params.hash, function(err, info) {
         if (err) { throw err; }
 
@@ -271,8 +271,8 @@ app.get('/watch/:hash', function (req, res) {
                 vidPath:         getOriginalPath(info, true),
                 info:            info,
                 infoS:           JSON.stringify(info),
-                enabledPlugins:  enabledPlugins.client,
-                enabledPluginsS: JSON.stringify(enabledPlugins.client)
+                enabledPlugins:  ENABLED_PLUGINS.client,
+                enabledPluginsS: JSON.stringify(ENABLED_PLUGINS.client)
             }
         );
     });
@@ -299,8 +299,8 @@ app.get('/edit/:hash', function (req, res) {
                 vidPath:         getOriginalPath(info, true),
                 info:            info,
                 infoS:           JSON.stringify(info),
-                enabledPlugins:  enabledPlugins.client,
-                enabledPluginsS: JSON.stringify(enabledPlugins.client)
+                enabledPlugins:  ENABLED_PLUGINS.client,
+                enabledPluginsS: JSON.stringify(ENABLED_PLUGINS.client)
             }
         );
     });
@@ -341,5 +341,5 @@ app.post('/edit/:hash', function (req, res) {
 
 
 app.listen(PORT, function() {
-    console.log('video-kiss-server app listening on port %s...', PORT);
+    console.log('dwarf-media-server app listening on port %s...', PORT);
 });

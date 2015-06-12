@@ -36,7 +36,11 @@ client-side plugins can do any and all of the following: **use**, **edit**, **pr
 
 * `use` shows additional info to the video during playback
 * `edit` displays form fields during video editing, setting a function which captures user data upon saving
-* `process` is reserved to 
+* `process` is reserved to TODO
+
+you can change which plugins are active and in which order by editing the variable `ENABLED_PLUGINS` on `serve.js`
+
+currently developed plugins reside in `static/scripts/plugins/[client|server]`
 
 
 
@@ -52,12 +56,18 @@ client-side plugins can do any and all of the following: **use**, **edit**, **pr
 * processing plugins
 
     * server-side
-        * create SD/HD MP4 with well-supported configs
-        * create HLS simple profiles (audio-only, SD, HD)
-        * audio wave form
-        * speech recognition...
+        * transcoding
+            * create SD/HD MP4 with well-supported configs
+            * create HLS simple profiles (audio-only, SD, HD)
+        * audio
+            * wave form (soundcloud)
+            * ID3 processing
+            * fetch cover
+            * speech recognition...
         
     * client-side (experimental)
-        * thumbnail capture
+        * `ONGOING` thumbnail capture
+        * `ONGOING` sound realtime viz (winamp)
         * generate film strip
-        * audio wave form
+        * audio wave form (soundcloud)
+        

@@ -1,5 +1,9 @@
 var avconvUtils = require('avconv-utils');
 
+/**
+ * creates a filmstrip, so scrubbing can be enhanced
+ */
+
 module.exports = {
     process: function(vidPath, info, cb) {
         if ('filmstrip' in info) {

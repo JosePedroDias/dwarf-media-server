@@ -1,5 +1,10 @@
 var avconvUtils = require('avconv-utils');
 
+/**
+ * samples a frame at 25% of the video and stores it
+ * can serve as poster
+ */
+
 module.exports = {
     process: function(vidPath, info, cb) {
         if ('thumb' in info) {

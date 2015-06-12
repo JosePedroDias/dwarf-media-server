@@ -1,6 +1,11 @@
 (function() {
     'use strict';
 
+    /**
+     * in edit mode exposes form fields for user to complete title, description and tags.
+     * in watch mode, displays those fields
+     */
+
     var PLUGIN_KEY = 'userFilledInfo';
     var PLUGIN_NAME = 'user-filled-info';
 

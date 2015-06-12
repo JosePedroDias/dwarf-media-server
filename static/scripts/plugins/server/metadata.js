@@ -1,5 +1,9 @@
 var avconvUtils = require('avconv-utils');
 
+/**
+ * stores info from avconv
+ */
+
 module.exports = {
     process: function(vidPath, info, cb) {
         if ('metadata' in info) {
