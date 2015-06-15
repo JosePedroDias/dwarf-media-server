@@ -15,8 +15,18 @@ var md5File = require('./lib/md5-file');
 var PORT = 3000;
 
 var ENABLED_PLUGINS = {
-    server: ['metadata', 'thumb', 'filmstrip'],
-    client: ['user-filled-info', 'metadata', 'thumb', 'sample-audio']
+    server: [
+         'metadata'
+        ,'thumb'
+        ,'filmstrip'
+    ],
+    client: [
+         'user-filled-info'
+        ,'metadata'
+        //,'thumb-cli'
+        //,'sample-audio'
+        ,'audio-wave'
+    ]
 };
 
 

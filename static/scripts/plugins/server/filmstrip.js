@@ -10,6 +10,10 @@ module.exports = {
             return setImmediate(cb, null, info);
         }
 
+        if (!info.metadata || !info.metadata.dimensions) {
+            return setImmediate(cb, null, info);
+        }
+
         avconvUtils.doMosaicMagic(
             {
                 video:    vidPath,

@@ -7,7 +7,7 @@
     var plugin = {
         keyName: PLUGIN_KEY,
 
-        use: function(vidPath, info, cb) {
+        use: function(mEl, info, cb) {
             if (!(PLUGIN_KEY in info)) {
                 return setTimeout(cb, 0, null);
             }

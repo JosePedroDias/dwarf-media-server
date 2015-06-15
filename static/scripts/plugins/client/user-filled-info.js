@@ -12,11 +12,7 @@
     var plugin = {
         keyName: PLUGIN_KEY,
 
-        /*process: function(vidPath, info, cb) {
-         throw 'TODO?';
-         },*/
-
-        use: function(vidPath, info, cb) {
+        use: function(mEl, info, cb) {
             if (!(PLUGIN_KEY in info)) {
                 return setTimeout(cb, 0, null);
             }
@@ -36,7 +32,7 @@
             return setTimeout(cb, 0, null);
         },
 
-        edit: function(vidPath, info, cb) {
+        edit: function(mEl, info, cb) {
             var bag = info[PLUGIN_KEY];
             if (!bag) {
                 info[PLUGIN_KEY] = bag = {
@@ -80,7 +76,7 @@
                 setTimeout(cb, 0, null, data);
             };
 
-            return setTimeout(cb, 0, null, extracter);
+            setTimeout(cb, 0, null, extracter);
         }
     };
 

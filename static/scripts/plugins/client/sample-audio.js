@@ -17,45 +17,88 @@
         context.createScriptProcessor = context.createJavaScriptNode;
     }
 
+    window.requestAnimFrame = window.requestAnimationFrame       ||
+                              window.webkitRequestAnimationFrame ||
+                              window.mozRequestAnimationFrame    ||
+                              function(cb) { window.setTimeout(cb, 1000 / 60); };
+
     var PLUGIN_KEY = 'sampleAudio';
     var PLUGIN_NAME = 'sample-audio';
 
-    var DIMS = [300, 100];
-    var SMOOTHING = 0.8;
-    var FFT_SIZE = 2048;
+    var DIMS = [512, 256];
+    var SMOOTHING = 0.5; // 0.2 0.5 0.8
+    var FFT_SIZE = 32; // 32 - 64 - 2048 - 32768
 
-    // http://webaudioapi.com/samples/visualizer/visualizer-sample.js
+    var an, times, freqs;
 
     var mEl, cEl, ctx;
 
-    var draw = function() {
+    function draw() {
+        an.getByteFrequencyData(freqs);
+        an.getByteTimeDomainData(times);
+
         ctx.fillStyle = '#000';
-        ctx.fillRect(0, 0, dims[0], dims[1]);
-    };
+        ctx.fillRect(0, 0, DIMS[0], DIMS[1]);
+
+        var i, I = an.frequencyBinCount;
+        var W = DIMS[0];
+        var H = DIMS[1];
+
+        var x, y;
+        var bW = W / I;
+
+        // frequency domain chart
+        ctx.fillStyle = '#F00';
+        for (i = 0; i < I; ++i) {
+            x = i * bW;
+            y = freqs[i] / 256 * H;
+            ctx.fillRect(x, H-y-1, bW, y);
+        }
+
+        // time domain chart
+        ctx.strokeStyle = '#0F0';
+        ctx.lineWidth = 4; //bW / 2;
+        ctx.beginPath();
+        for (i = 0; i < I; ++i) {
+            x = i * bW + bW/2;
+            y = times[i] / 256 * H;
+            if (i === 0) {
+                ctx.moveTo(x, y);
+            }
+            else {
+                ctx.lineTo(x, y);
+            }
+        }
+        ctx.stroke();
+
+        requestAnimFrame(draw);
+    }
 
     var plugin = {
         keyName: PLUGIN_KEY,
 
-        use: function(vidPath, info, cb) {
-            mEl = document.querySelector('video, audio');
+        use: function(_mEl, info, cb) {
+            mEl = _mEl;
+
             mEl.addEventListener('loadeddata', function() {
                 cEl = document.createElement('canvas');
                 document.body.appendChild(cEl);
-                cEl.width  = dims[0];
-                cEl.height = dims[1];
-                ctx = document.getContext('2d');
+                cEl.width  = DIMS[0];
+                cEl.height = DIMS[1];
+                ctx = cEl.getContext('2d');
 
-                var d = mEl.duration;
-                console.log(d);
+                an = context.createAnalyser();
+                an.smoothingTimeConstant = SMOOTHING;
+                an.fftSize = FFT_SIZE;
+                an.minDecibels = -140;
+                an.maxDecibels = 0;
 
-                var analyser = context.createAnalyser();
+                var source = context.createMediaElementSource(mEl);
+                source.connect(an);
+                an.connect(context.destination);
 
-                analyser.connect(context.destination);
-                analyser.minDecibels = -140;
-                analyser.maxDecibels = 0;
-
-                var freqs = new Uint8Array(analyser.frequencyBinCount);
-                var times = new Uint8Array(analyser.frequencyBinCount);
+                freqs = new Uint8Array(an.frequencyBinCount);
+                times = new Uint8Array(an.frequencyBinCount);
 
                 draw();
             });

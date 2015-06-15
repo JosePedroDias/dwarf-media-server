@@ -9,3 +9,18 @@ nav ul {
 nav li {
     display: inline-block;
 }
+
+
+
+.audio-wave {
+    position: relative;
+    display: inline-block;
+}
+
+.audio-wave div {
+    width: 1px;
+    position: absolute;
+    top: 0;
+    height: 100%;
+    background-color: #F00;
+}
