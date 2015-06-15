@@ -69,7 +69,7 @@
                 ctnEl.className = 'ui';
 
                 var togglePlaybackEl = document.createElement('button');
-                togglePlaybackEl.className = 'toggle-playback';
+                togglePlaybackEl.className = 'toggle-playback button';
 
                 var togglePlaybackIconEl = document.createElement('i');
                 togglePlaybackIconEl.className = 'fa fa-play';

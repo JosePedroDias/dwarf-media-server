@@ -126,6 +126,10 @@
             h2El.appendChild( document.createTextNode('AUDIO WAVE:') );
             document.body.appendChild(h2El);
 
+            var pEl = document.createElement('p');
+            pEl.appendChild( document.createTextNode('let the resourse play all the way to capture the complete wave form') );
+            document.body.appendChild(pEl);
+
             mEl.addEventListener('playing', function() {
                 if (running) { return; }
 
