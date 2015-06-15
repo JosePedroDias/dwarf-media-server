@@ -179,7 +179,7 @@
 
                 mEl.addEventListener('volumechange', function() {
                     var v = mEl.volume;
-                    console.log(v);
+                    //console.log(v);
                     updateVolume(v);
                     vs.setValue(v);
                 });

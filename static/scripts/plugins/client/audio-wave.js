@@ -111,6 +111,8 @@
 
                 cursorEl.style.left = (t/d*100).toFixed(2) + '%';
             });
+
+            setTimeout(cb, 0, null);
         },
 
         edit: function(_mEl, info, cb) {

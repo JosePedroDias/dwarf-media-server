@@ -43,31 +43,30 @@ you can change which plugins are active and in which order by editing the variab
 currently developed plugins reside in `static/scripts/plugins/[client|server]`
 
 
+## ONGOING
+
+* client-side (experimental)
+    * thumbnail capture
+    * sound realtime viz (winamp)
+    * audio wave form (soundcloud)
 
 ## TODO
-
-* add audio-only property based on mime type?
-* video plugins opt-out on those (thumb, filmstrip)
-* filmstrip dims based on area instead of dumb scale
 
 * authentication without password...
 * search features
 
-* processing plugins
-
-    * server-side
-        * transcoding
-            * create SD/HD MP4 with well-supported configs
-            * create HLS simple profiles (audio-only, SD, HD)
-        * audio
-            * wave form (soundcloud)
-            * ID3 processing
-            * fetch cover
-            * speech recognition...
-        
-    * client-side (experimental)
-        * `ONGOING` thumbnail capture
-        * `ONGOING` sound realtime viz (winamp)
-        * `ONGOING` audio wave form (soundcloud)
-        * generate film strip
-        
+* server-side
+    * transcoding
+        * create SD/HD MP4 with well-supported configs
+        * create HLS simple profiles (audio-only, SD, HD)
+    * audio
+        * wave form (soundcloud)
+        * ID3 processing
+        * fetch cover
+        * speech recognition...
+    * other
+        * webvtt/srt support
+    
+* client-side (experimental)
+    * generate film strip ...
+    
