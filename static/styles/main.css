@@ -6,12 +6,25 @@ body {
     font-family: sans-serif;
 }
 
-nav ul {
+ul {
     list-style: none;
+    padding: 0 0 0 10px;
 }
 
-nav li {
+/*nav li {
     display: inline-block;
+}*/
+
+a {
+    color: #5065aa;
+}
+
+.button {
+    background-color: #5065aa;
+    color: #FFF;
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 4px;
 }
 
 
