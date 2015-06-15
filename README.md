@@ -68,6 +68,6 @@ currently developed plugins reside in `static/scripts/plugins/[client|server]`
     * client-side (experimental)
         * `ONGOING` thumbnail capture
         * `ONGOING` sound realtime viz (winamp)
+        * `ONGOING` audio wave form (soundcloud)
         * generate film strip
-        * audio wave form (soundcloud)
         

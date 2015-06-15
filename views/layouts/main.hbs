@@ -5,7 +5,11 @@
 
         <title>{{title}} - dwarf</title>
 
-        <link rel="stylesheet" href="/static/styles/main.css"/>
+        <link rel="stylesheet" href="/static/styles/main.css">
+
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+        <script src="http://skidding.github.io/dragdealer/src/dragdealer.js"></script>
     </head>
 
     <body>
@@ -16,9 +20,8 @@
         {{#unless skipNav}}
         <nav>
             <ul>
-                <!--<li><a href="/">home</a></li>-->
-                <li><a href="/list">list</a></li>
-                <li><a href="/upload">upload</a></li>
+                <li><a href="/list">   <i class="fa fa-list-ul"></i> list</a></li>
+                <li><a href="/upload"> <i class="fa fa-upload"></i> upload</a></li>
             </ul>
         </nav>
         {{/unless}}

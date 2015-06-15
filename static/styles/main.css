@@ -1,3 +1,7 @@
+/**
+ * BASIC
+ */
+
 body {
     font-family: sans-serif;
 }
@@ -11,6 +15,48 @@ nav li {
 }
 
 
+
+/**
+ * UI
+ */
+
+.dragdealer {
+    position: relative;
+    height: 24px;
+    background: #CCC;
+}
+
+.dragdealer .handle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    cursor: pointer;
+    background-color: #222;
+    height: 24px;
+
+    color: #FFF;
+    line-height: 30px;
+    width: 12px;
+    text-align: center;
+}
+
+.dragdealer .disabled {
+    opacity: 0.5;
+}
+
+#time-slider {
+    width: 40%;
+}
+
+#volume-slider {
+    width: 10%;
+}
+
+
+
+/**
+ * PLUGINS
+ */
 
 .audio-wave {
     position: relative;
