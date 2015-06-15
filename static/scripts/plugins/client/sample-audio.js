@@ -26,8 +26,8 @@
     var PLUGIN_NAME = 'sample-audio';
 
     var DIMS = [512, 256];
-    var SMOOTHING = 0.5; // 0.2 0.5 0.8
-    var FFT_SIZE = 32; // 32 - 64 - 2048 - 32768
+    var SMOOTHING = 0.8; // 0.2 0.5 0.8
+    var FFT_SIZE = 128; // 32 - 64 - 2048 - 32768
 
     var an, times, freqs;
 
@@ -81,6 +81,10 @@
             mEl = _mEl;
 
             mEl.addEventListener('loadeddata', function() {
+                var h2El = document.createElement('h2');
+                h2El.appendChild( document.createTextNode('SAMPLE AUDIO:') );
+                document.body.appendChild(h2El);
+
                 cEl = document.createElement('canvas');
                 document.body.appendChild(cEl);
                 cEl.width  = DIMS[0];
@@ -102,6 +106,8 @@
 
                 draw();
             });
+
+            setTimeout(cb, 0, null);
         }
     };
 

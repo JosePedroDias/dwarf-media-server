@@ -42,6 +42,7 @@
                 };
             }
             var markup = [
+                '<h2>USER FILLED INFO:</h2>',
                 '<div>',
                     '<p>',
                         '<label for="ufi-title">title</label>',

@@ -94,6 +94,10 @@
                 return setTimeout(cb, 0, null);
             }
 
+            var h2El = document.createElement('h2');
+            h2El.appendChild( document.createTextNode('AUDIO WAVE:') );
+            document.body.appendChild(h2El);
+
             var ctnEl = document.createElement('div');
             ctnEl.className = PLUGIN_NAME;
 
@@ -102,8 +106,8 @@
             ctnEl.appendChild(imgEl);
 
             var cursorEl = document.createElement('div');
-            document.body.appendChild(ctnEl);
             ctnEl.appendChild(cursorEl);
+            document.body.appendChild(ctnEl);
 
             mEl.addEventListener('timeupdate', function() {
                 var t = mEl.currentTime;
@@ -118,6 +122,10 @@
         edit: function(_mEl, info, cb) {
             mEl = _mEl;
 
+            var h2El = document.createElement('h2');
+            h2El.appendChild( document.createTextNode('AUDIO WAVE:') );
+            document.body.appendChild(h2El);
+
             mEl.addEventListener('playing', function() {
                 if (running) { return; }
 
@@ -126,7 +134,9 @@
                 running = true;
 
                 cEl = document.createElement('canvas');
-                document.body.appendChild(cEl);
+                h2El.parentNode.insertBefore(cEl, h2El.nextSibling);
+                //document.body.appendChild(cEl);
+
                 cEl.width  = DIMS[0];
                 cEl.height = DIMS[1];
                 ctx = cEl.getContext('2d');

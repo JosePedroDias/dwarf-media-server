@@ -23,7 +23,7 @@ var ENABLED_PLUGINS = {
          'user-filled-info'
         ,'metadata'
         //,'thumb-cli'
-        //,'sample-audio'
+        ,'sample-audio'
         ,'audio-wave'
         ,'filmstrip'
     ]

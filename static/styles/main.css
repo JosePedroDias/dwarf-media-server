@@ -95,3 +95,9 @@ nav li {
     display: inline-block;
     width: 110px;
 }
+
+.user-filled-info label {
+    display: inline-block;
+    width: 110px;
+    font-weight: bold;
+}
