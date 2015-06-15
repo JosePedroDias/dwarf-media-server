@@ -70,3 +70,20 @@ nav li {
     height: 100%;
     background-color: #F00;
 }
+
+
+
+.filmstrip {
+    overflow: hidden;
+    position: relative;
+}
+
+.filmstrip.disabled {
+    display: none;
+}
+
+.filmstrip img {
+    position: absolute;
+    left: 0;
+    top: 0;
+}

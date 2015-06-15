@@ -1,4 +1,3 @@
-var path = require('path');
 var fs   = require('fs');
 
 var express    = require('express');
@@ -26,6 +25,7 @@ var ENABLED_PLUGINS = {
         //,'thumb-cli'
         //,'sample-audio'
         ,'audio-wave'
+        ,'filmstrip'
     ]
 };
 

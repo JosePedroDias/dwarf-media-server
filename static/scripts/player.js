@@ -114,9 +114,17 @@
                 var ts = new Dragdealer(
                     'time-slider',
                     {
-                        dragStopCallback: function(x, y) {
+                        dragStartCallback: function(x) {
+                            mEl.dispatchEvent( new Event('time-sliding-started') );
+                        },
+                        animationCallback: function(x) {
+                            var ev = new CustomEvent('time-sliding', {detail:{r:x}});
+                            mEl.dispatchEvent(ev);
+                        },
+                        dragStopCallback: function(x) {
                             //console.log('time', x);
                             mEl.currentTime = mEl.duration * x;
+                            mEl.dispatchEvent( new Event('time-sliding-stopped') );
                         }
                     }
                 );

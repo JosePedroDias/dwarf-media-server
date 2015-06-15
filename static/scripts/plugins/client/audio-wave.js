@@ -161,6 +161,10 @@
             });
 
             var extracter = function(cb) {
+                if (!cEl) {
+                    return setTimeout(cb, 0, null);
+                }
+
                 console.log('%s - called extracter', PLUGIN_KEY);
                 var data = {
                     key: PLUGIN_KEY,

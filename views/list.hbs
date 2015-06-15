@@ -1,6 +1,6 @@
 <ul>
     {{#each infos}}
-        <li><a href="/watch/{{{this.hash}}}">{{this.hash}} - {{this.userFilledInfo.title}}</a></li>
+        <li><a href="/watch/{{{this.hash}}}"> <i class="fa fa-{{#if this.metadata.vCodec}}video-camera{{else}}music{{/if}}"></i> {{this.hash}} - {{this.userFilledInfo.title}}</a></li>
     {{else}}
         no media found
     {{/each}}
