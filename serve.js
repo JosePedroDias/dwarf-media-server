@@ -256,6 +256,9 @@ app.get('/stream/:hash', function (req, res) {
             //.on('error', error)
             //.on('directory', redirect)
             //.on('headers', headers)
+            .on('headers', function(res, path, stat) {
+                res.setHeader('Access-Control-Allow-Origin', '*');
+            })
             .pipe(res);
     });
 });
