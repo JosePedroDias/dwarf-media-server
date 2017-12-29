@@ -1,63 +1,68 @@
-<script src="/static/scripts/vendor/async.js"></script>
-{{#each enabledPlugins}}
-    <script src="/static/scripts/plugins/client/{{{this}}}.js"></script>
-{{/each}}
+<script src="/static/scripts/vendor/async.js"></script> {{#each enabledPlugins}}
+<script src="/static/scripts/plugins/client/{{{this}}}.js"></script> {{/each}}
 <script src="/static/scripts/ajax.js"></script>
 <script src="/static/scripts/player.js"></script>
 
 <div id="player"></div>
 
 <script>
-    var enabledPlugins = {{{enabledPluginsS}}};
+    const enabledPlugins = {{{ enabledPluginsS }}};
 
-    var p = window.player(
-        "{{{vidPath}}}",
-        {{{infoS}}}
-    );
+    const p = window.player("{{{vidPath}}}", {{{ infoS }}});
 
-    p.display(function(err) {
-        if (err) { return window.alert(err); }
+    p.display(function (err) {
+        if (err) {
+            return window.alert(err);
+        }
 
-        p.edit(function(err, extracters) {
-            if (err) { return window.alert(err); }
+        p.edit(function (err, extracters) {
+            if (err) {
+                return window.alert(err);
+            }
 
-            console.log('all done!');
+            console.log("all done!");
 
-            document.body.appendChild( document.createElement('br') );
+            document.body.appendChild(document.createElement("br"));
 
-            var saveBtnEl = document.createElement('button');
-            saveBtnEl.className = 'button';
-            saveBtnEl.innerHTML = 'save';
+            const saveBtnEl = document.createElement("button");
+            saveBtnEl.className = "button";
+            saveBtnEl.innerHTML = "save";
             document.body.appendChild(saveBtnEl);
 
-            saveBtnEl.addEventListener('click', function() {
+            saveBtnEl.addEventListener("click", function () {
                 async.mapSeries(
                     extracters,
-                    function(extracter, innerCb) {
+                    function (extracter, innerCb) {
                         if (!extracter) {
                             return setTimeout(innerCb, 0, null);
                         }
                         extracter(innerCb);
                     },
-                    function(err, bags) {
-                        if (err) { return window.alert(err); }
+                    function (err, bags) {
+                        if (err) {
+                            return window.alert(err);
+                        }
 
-                        bags = bags.filter(function(bag) { return !!bag; });
+                        bags = bags.filter(function (bag) {
+                            return !!bag;
+                        });
 
-                        var o = {};
-                        bags.forEach(function(bag) {
+                        const o = {};
+                        bags.forEach(function (bag) {
                             o[bag.key] = bag.values;
                         });
 
                         ajax({
-                            url:'/edit/{{{info.hash}}}',
-                            method: 'POST',
-                            headers: {'Content-Type': 'application/json'},
+                            url: "/edit/{{{info.hash}}}",
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
                             payload: o,
-                            cb: function(err, o) {
-                                if (err) { return window.alert(err); }
+                            cb: function (err, o) {
+                                if (err) {
+                                    return window.alert(err);
+                                }
 
-                                console.log(o || 'OK!');
+                                console.log(o || "OK!");
                             }
                         });
                     }
@@ -69,4 +74,6 @@
     });
 </script>
 
-<br/><a class="button" href="/watch/{{{info.hash}}}"> <i class="fa fa-eye"></i> watch this resource</a>
+<br/>
+<a class="button" href="/watch/{{{info.hash}}}">
+    <i class="fa fa-eye"></i> watch this resource</a>

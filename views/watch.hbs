@@ -1,23 +1,22 @@
-<script src="/static/scripts/vendor/async.js"></script>
-{{#each enabledPlugins}}
-    <script src="/static/scripts/plugins/client/{{{this}}}.js"></script>
-{{/each}}
+<script src="/static/scripts/vendor/async.js"></script> {{#each enabledPlugins}}
+<script src="/static/scripts/plugins/client/{{{this}}}.js"></script> {{/each}}
 <script src="/static/scripts/player.js"></script>
 
 <div id="player"></div>
 
 <script>
-    var enabledPlugins = {{{enabledPluginsS}}};
+    const enabledPlugins = {{{ enabledPluginsS }}};
 
-    var p = window.player(
+    const p = window.player(
         "{{{vidPath}}}",
-        {{{infoS}}}
+        {{{ infoS }}},
+    "{{{ mediaDir }}}"
     );
 
-    p.display(function(err) {
+    p.display(function (err) {
         if (err) { return window.alert(err); }
 
-        p.use(function(err) {
+        p.use(function (err) {
             if (err) { return window.alert(err); }
 
             console.log('all done!');
@@ -25,4 +24,6 @@
     });
 </script>
 
-<br/><a class="button" href="/edit/{{{info.hash}}}"> <i class="fa fa-edit"></i> edit this resource</a>
+<br/>
+<a class="button" href="/edit/{{{info.hash}}}">
+    <i class="fa fa-edit"></i> edit this resource</a>

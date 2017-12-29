@@ -1,14 +1,14 @@
 (function() {
-    'use strict';
+  "use strict";
 
-    /**
-     * displays nearest thumbnail on time slider
-     */
+  /**
+   * displays nearest thumbnail on time slider
+   */
 
-    var PLUGIN_KEY = 'filmstrip';
-    var PLUGIN_NAME = 'filmstrip';
+  const PLUGIN_KEY = "filmstrip";
+  const PLUGIN_NAME = "filmstrip";
 
-    /*
+  /*
 {
   "height": 768,
   "frameDimensions": [
@@ -20,62 +20,71 @@
 }
      */
 
-    var plugin = {
-        keyName: PLUGIN_KEY,
+  const plugin = {
+    keyName: PLUGIN_KEY,
 
-        use: function(mEl, info, cb) {
-            var bag = info[PLUGIN_KEY];
-            if (!bag) {
-                return setTimeout(cb, 0, null);
-            }
+    use: function(mEl, info, cb) {
+      const bag = info[PLUGIN_KEY];
+      if (!bag) {
+        return setTimeout(cb, 0, null);
+      }
 
-            var timeSliderHandleEl = document.querySelector('#time-slider .handle');
+      const timeSliderHandleEl = document.querySelector("#time-slider .handle");
 
-            var ctnEl = document.createElement('div');
-            ctnEl.className = PLUGIN_NAME + ' disabled';
-            ctnEl.style.marginTop = ['-', bag.frameDimensions[1], 'px'].join('');
-            ctnEl.style.marginLeft = ['-', ~~( (bag.frameDimensions[0] - 12)/2), 'px'].join('');
-            ctnEl.style.width  = bag.frameDimensions[0] + 'px';
-            ctnEl.style.height = bag.frameDimensions[1] + 'px';
+      const ctnEl = document.createElement("div");
+      ctnEl.className = PLUGIN_NAME + " disabled";
+      ctnEl.style.marginTop = ["-", bag.frameDimensions[1], "px"].join("");
+      ctnEl.style.marginLeft = [
+        "-",
+        ~~((bag.frameDimensions[0] - 12) / 2),
+        "px"
+      ].join("");
+      ctnEl.style.width = bag.frameDimensions[0] + "px";
+      ctnEl.style.height = bag.frameDimensions[1] + "px";
 
-            var imgEl = document.createElement('img');
-            imgEl.src = '/' + bag.imageFile;
-            ctnEl.appendChild(imgEl);
+      const imgEl = document.createElement("img");
+      imgEl.src = "/" + bag.imageFile;
+      ctnEl.appendChild(imgEl);
 
-            timeSliderHandleEl.appendChild(ctnEl);
+      timeSliderHandleEl.appendChild(ctnEl);
 
-            var fH = bag.frameDimensions[1];
-            var frames = bag.frames;
+      const NW = Math.round(bag.mosaicDimensions[0] / bag.frameDimensions[0]);
+      const fW = bag.frameDimensions[0];
+      const fH = bag.frameDimensions[1];
+      const N = bag.frames;
 
-            var disabled = true;
+      let disabled = true;
 
-            mEl.addEventListener('time-sliding-started', function() {
-                disabled = false;
-                ctnEl.className = PLUGIN_NAME;
-            });
+      mEl.addEventListener("time-sliding-started", function() {
+        disabled = false;
+        ctnEl.className = PLUGIN_NAME;
+      });
 
-            mEl.addEventListener('time-sliding-stopped', function() {
-                disabled = true;
-                ctnEl.className = PLUGIN_NAME + ' disabled';
-            });
+      mEl.addEventListener("time-sliding-stopped", function() {
+        disabled = true;
+        ctnEl.className = PLUGIN_NAME + " disabled";
+      });
 
-            mEl.addEventListener('time-sliding', function(ev) {
-                if (disabled) { return; }
-                var r = ev.detail.r;
-                var i = Math.floor( r * frames);
-                imgEl.style.top = ['-', fH * i, 'px'].join('');
-            });
-
-            return setTimeout(cb, 0, null);
+      mEl.addEventListener("time-sliding", function(ev) {
+        if (disabled) {
+          return;
         }
-    };
+        const r = ev.detail.r;
+        const i = Math.floor(r * N);
+        const x = i % NW;
+        const y = Math.floor(i / NW);
+        imgEl.style.left = ["-", fW * x, "px"].join("");
+        imgEl.style.top = ["-", fH * y, "px"].join("");
+        //console.log("#%s - x:%s y:%s", i, x, y);
+      });
 
-
-
-    if (window.plugins) {
-        window.plugins.push(plugin);
+      return setTimeout(cb, 0, null);
     }
-    else {
-        window.plugins = [plugin];
-    }
+  };
+
+  if (window.plugins) {
+    window.plugins.push(plugin);
+  } else {
+    window.plugins = [plugin];
+  }
 })();
